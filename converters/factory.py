@@ -8,6 +8,7 @@ from .base import ToolCallConverter, StreamingToolCallHandler, PassThroughConver
 from .glm import GLMToolCallConverter, GLMStreamingHandler
 from .openai import OpenAIToolCallConverter, OpenAIStreamingHandler
 from .claude import ClaudeToolCallConverter, ClaudeStreamingHandler
+from .deepseek import DeepSeekToolCallConverter, DeepSeekStreamingHandler
 
 
 class ConverterFactory:
@@ -16,6 +17,7 @@ class ConverterFactory:
     def __init__(self):
         # Register available converters (order matters - most specific first)
         self._converters = [
+            DeepSeekToolCallConverter(),
             GLMToolCallConverter(),
             OpenAIToolCallConverter(),
             ClaudeToolCallConverter(),
@@ -39,7 +41,9 @@ class ConverterFactory:
         converter = self.get_converter(model_name)
         
         # Return model-specific streaming handler if available
-        if isinstance(converter, GLMToolCallConverter):
+        if isinstance(converter, DeepSeekToolCallConverter):
+            return DeepSeekStreamingHandler()
+        elif isinstance(converter, GLMToolCallConverter):
             return GLMStreamingHandler()
         elif isinstance(converter, OpenAIToolCallConverter):
             return OpenAIStreamingHandler()

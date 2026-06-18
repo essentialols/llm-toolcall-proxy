@@ -1,0 +1,20 @@
+{% if not add_generation_prompt is defined %}{% set add_generation_prompt = false %}{% endif %}{{ bos_token }}{% if tools is defined and tools %}You are a helpful coding assistant with access to the following tools:
+
+{% for tool in tools %}
+- {{ tool.function.name }}: {{ tool.function.description }}
+  Parameters: {{ tool.function.parameters | tojson }}
+{% endfor %}
+
+When you need to use a tool, respond with ONLY a JSON object in this exact format (no other text before or after):
+{"name": "tool_name", "arguments": {"param1": "value1"}}
+
+When you do NOT need a tool, respond normally with text.
+{% endif %}{% for message in messages %}{% if message['role'] == 'system' %}{{ message['content'] }}
+
+{% elif message['role'] == 'user' %}User: {{ message['content'] }}
+
+{% elif message['role'] == 'assistant' %}Assistant: {{ message['content'] }}
+
+{% elif message['role'] == 'tool' %}Tool result: {{ message['content'] }}
+
+{% endif %}{% endfor %}{% if add_generation_prompt %}Assistant: {% endif %}
